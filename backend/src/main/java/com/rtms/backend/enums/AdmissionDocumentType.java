@@ -1,0 +1,12 @@
+package com.rtms.backend.enums;
+
+public enum AdmissionDocumentType {
+    HORSE_PHOTO,
+    REGISTRATION_DOCUMENT,
+    PEDIGREE_CERTIFICATE,
+    VACCINATION_RECORD,
+    DEWORMING_RECORD,
+    HEALTH_CERTIFICATE,
+    PREVIOUS_MEDICAL_RECORD,
+    PREVIOUS_INJURY_RECORD
+}
