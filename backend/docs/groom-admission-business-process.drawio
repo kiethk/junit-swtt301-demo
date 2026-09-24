@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mxfile host="drawio" version="26.0.0">
+  <diagram id="groom-admission-business-process" name="Groom Admission Business Process">
+    <mxGraphModel dx="1600" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="900" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="pool" value="Groom Admission Process" style="swimlane;html=1;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="1660" height="660" as="geometry" />
+        </mxCell>
+        <mxCell id="lane-owner" value="Horse Owner" style="swimlane;html=1;startSize=30;horizontal=0;collapsible=0;fillColor=none;strokeColor=#666666;" vertex="1" parent="pool">
+          <mxGeometry x="30" y="0" width="1630" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="lane-groom" value="Groom" style="swimlane;html=1;startSize=30;horizontal=0;collapsible=0;fillColor=none;strokeColor=#666666;" vertex="1" parent="pool">
+          <mxGeometry x="30" y="150" width="1630" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="lane-system" value="Admission Service" style="swimlane;html=1;startSize=30;horizontal=0;collapsible=0;fillColor=none;strokeColor=#666666;" vertex="1" parent="pool">
+          <mxGeometry x="30" y="360" width="1630" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="lane-next" value="Next Review Roles" style="swimlane;html=1;startSize=30;horizontal=0;collapsible=0;fillColor=none;strokeColor=#666666;" vertex="1" parent="pool">
+          <mxGeometry x="30" y="530" width="1630" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="start" value="Application submitted" style="shape=mxgraph.bpmn.event;html=1;perimeter=ellipsePerimeter;aspect=fixed;outline=standard;symbol=general;verticalLabelPosition=bottom;verticalAlign=top;align=center;labelBackgroundColor=#ffffff;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="lane-owner">
+          <mxGeometry x="50" y="50" width="50" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="create-profile" value="Create candidate horse profile&#xa;and documents" style="shape=mxgraph.bpmn.task2;whiteSpace=wrap;rectStyle=rounded;size=10;html=1;container=1;expand=0;collapsible=0;taskMarker=user;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lane-owner">
+          <mxGeometry x="150" y="40" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="list" value="Open admissions in&#xa;GROOM_REVIEW" style="shape=mxgraph.bpmn.task2;whiteSpace=wrap;rectStyle=rounded;size=10;html=1;container=1;expand=0;collapsible=0;taskMarker=user;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lane-groom">
+          <mxGeometry x="350" y="55" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="inspect" value="Inspect horse documents&#xa;and stable readiness" style="shape=mxgraph.bpmn.task2;whiteSpace=wrap;rectStyle=rounded;size=10;html=1;container=1;expand=0;collapsible=0;taskMarker=user;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="lane-groom">
+          <mxGeometry x="570" y="55" width="190" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="decision" value="Groom decision?" style="shape=mxgraph.bpmn.gateway2;html=1;perimeter=rhombusPerimeter;outline=none;symbol=none;gwType=exclusive;verticalLabelPosition=bottom;verticalAlign=top;align=center;labelBackgroundColor=#ffffff;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="lane-groom">
+          <mxGeometry x="830" y="65" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="reject" value="Persist groom rejection&#xa;with feedback" style="shape=mxgraph.bpmn.task2;whiteSpace=wrap;rectStyle=rounded;size=10;html=1;container=1;expand=0;collapsible=0;taskMarker=service;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="lane-system">
+          <mxGeometry x="940" y="20" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="end-rejected" value="REJECTED" style="shape=mxgraph.bpmn.event;html=1;perimeter=ellipsePerimeter;aspect=fixed;outline=end;symbol=general;verticalLabelPosition=bottom;verticalAlign=top;align=center;labelBackgroundColor=#ffffff;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="lane-system">
+          <mxGeometry x="1180" y="30" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="lock" value="Lock capacity stalls&#xa;and count capacity" style="shape=mxgraph.bpmn.task2;whiteSpace=wrap;rectStyle=rounded;size=10;html=1;container=1;expand=0;collapsible=0;taskMarker=businessRule;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="lane-system">
+          <mxGeometry x="940" y="95" width="180" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="capacity" value="Q available &gt;= 1&#xa;and Regular available &gt;=&#xa;occupied Q + 1?" style="shape=mxgraph.bpmn.gateway2;html=1;perimeter=rhombusPerimeter;outline=none;symbol=none;gwType=exclusive;verticalLabelPosition=bottom;verticalAlign=top;align=center;labelBackgroundColor=#ffffff;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="lane-system">
+          <mxGeometry x="1190" y="100" width="90" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="waiting" value="Save status&#xa;WAITING_FOR_STALL" style="shape=mxgraph.bpmn.task2;whiteSpace=wrap;rectStyle=rounded;size=10;html=1;container=1;expand=0;collapsible=0;taskMarker=service;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="lane-system">
+          <mxGeometry x="1360" y="35" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="retry" value="Retry quarantine allocation&#xa;when capacity returns" style="shape=mxgraph.bpmn.event;html=1;perimeter=ellipsePerimeter;aspect=fixed;outline=catching;symbol=timer;verticalLabelPosition=bottom;verticalAlign=top;align=center;labelBackgroundColor=#ffffff;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="lane-groom">
+          <mxGeometry x="1390" y="135" width="60" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="allocate" value="Assign quarantine stall&#xa;and mark OCCUPIED" style="shape=mxgraph.bpmn.task2;whiteSpace=wrap;rectStyle=rounded;size=10;html=1;container=1;expand=0;collapsible=0;taskMarker=service;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="lane-system">
+          <mxGeometry x="1360" y="115" width="170" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="vet" value="Continue to veterinarian review&#xa;status VET_REVIEW" style="shape=mxgraph.bpmn.task2;whiteSpace=wrap;rectStyle=rounded;size=10;html=1;container=1;expand=0;collapsible=0;taskMarker=user;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="lane-next">
+          <mxGeometry x="1370" y="35" width="190" height="70" as="geometry" />
+        </mxCell>
+        <mxCell id="edge1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="start" target="create-profile">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge2" value="visible to Groom" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="create-profile" target="list">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="list" target="inspect">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="inspect" target="decision">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge5" value="Rejected" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="decision" target="reject">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="reject" target="end-rejected">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge7" value="Approved" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="decision" target="lock">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge8" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="lock" target="capacity">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge9" value="No" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="capacity" target="waiting">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge10" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="waiting" target="retry">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge11" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="retry" target="lock">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1420" y="750" />
+              <mxPoint x="970" y="750" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="edge12" value="Yes" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;labelBackgroundColor=#ffffff;" edge="1" parent="1" source="capacity" target="allocate">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge13" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;orthogonalLoop=1;jettySize=auto;html=1;endArrow=blockThin;endFill=1;" edge="1" parent="1" source="allocate" target="vet">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
