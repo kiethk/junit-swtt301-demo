@@ -49,7 +49,8 @@ class AdmissionGroomReviewServiceTest {
 
     @Test
     @DisplayName("Groom approve with quarantine and downstream regular capacity moves admission to VET_REVIEW")
-    void reviewApprove_whenCapacityIsEnough_shouldAllocateQuarantineStallAndMoveToVetReview() {
+    void should_AllocateQuarantineStallAndMoveToVetReview_When_CapacityIsEnough() {
+        // Arrange
         AdmissionApplication admission = admission(1L, AdmissionStatus.GROOM_REVIEW);
         StableStall quarantineStall = stall(11L);
         GroomReviewRequest request = request(ReviewDecision.APPROVED, "Stable is ready");
@@ -62,8 +63,10 @@ class AdmissionGroomReviewServiceTest {
         when(admissionApplicationRepository.save(admission))
                 .thenReturn(admission);
 
+        // Act
         AdmissionApplication result = service.review(1L, 100L, request);
 
+        // Assert
         assertEquals(AdmissionStatus.VET_REVIEW, result.getStatus());
         assertEquals(ReviewDecision.APPROVED, result.getGroomDecision());
         assertEquals(100L, result.getGroomId());
@@ -76,7 +79,8 @@ class AdmissionGroomReviewServiceTest {
 
     @Test
     @DisplayName("Groom approve without available quarantine stall moves admission to WAITING_FOR_STALL")
-    void reviewApprove_whenNoQuarantineCapacity_shouldMoveToWaitingForStall() {
+    void should_MoveToWaitingForStall_When_NoQuarantineCapacity() {
+        // Arrange
         AdmissionApplication admission = admission(1L, AdmissionStatus.GROOM_REVIEW);
         GroomReviewRequest request = request(ReviewDecision.APPROVED, "Approved");
 
@@ -86,8 +90,10 @@ class AdmissionGroomReviewServiceTest {
         when(admissionApplicationRepository.save(admission))
                 .thenReturn(admission);
 
+        // Act
         AdmissionApplication result = service.review(1L, 100L, request);
 
+        // Assert
         assertEquals(AdmissionStatus.WAITING_FOR_STALL, result.getStatus());
         assertEquals(ReviewDecision.APPROVED, result.getGroomDecision());
         assertNull(result.getQuarantineStallId());
@@ -97,7 +103,8 @@ class AdmissionGroomReviewServiceTest {
 
     @Test
     @DisplayName("Groom approve without downstream regular capacity moves admission to WAITING_FOR_STALL")
-    void reviewApprove_whenRegularDownstreamCapacityIsNotEnough_shouldMoveToWaitingForStall() {
+    void should_MoveToWaitingForStall_When_RegularDownstreamCapacityIsNotEnough() {
+        // Arrange
         AdmissionApplication admission = admission(1L, AdmissionStatus.GROOM_REVIEW);
         GroomReviewRequest request = request(ReviewDecision.APPROVED, "Approved");
 
@@ -107,8 +114,10 @@ class AdmissionGroomReviewServiceTest {
         when(admissionApplicationRepository.save(admission))
                 .thenReturn(admission);
 
+        // Act
         AdmissionApplication result = service.review(1L, 100L, request);
 
+        // Assert
         assertEquals(AdmissionStatus.WAITING_FOR_STALL, result.getStatus());
         assertEquals(ReviewDecision.APPROVED, result.getGroomDecision());
         assertNull(result.getQuarantineStallId());
@@ -118,7 +127,8 @@ class AdmissionGroomReviewServiceTest {
 
     @Test
     @DisplayName("Groom reject moves admission to REJECTED and does not allocate a stall")
-    void reviewReject_shouldRejectAdmissionAndNotAllocateStall() {
+    void should_RejectAdmissionAndNotAllocateStall_When_GroomRejects() {
+        // Arrange
         AdmissionApplication admission = admission(1L, AdmissionStatus.GROOM_REVIEW);
         GroomReviewRequest request = request(ReviewDecision.REJECTED, "Unsafe quarantine handling");
 
@@ -127,8 +137,10 @@ class AdmissionGroomReviewServiceTest {
         when(admissionApplicationRepository.save(admission))
                 .thenReturn(admission);
 
+        // Act
         AdmissionApplication result = service.review(1L, 100L, request);
 
+        // Assert
         assertEquals(AdmissionStatus.REJECTED, result.getStatus());
         assertEquals(ReviewDecision.REJECTED, result.getGroomDecision());
         assertEquals("Unsafe quarantine handling", result.getGroomFeedback());
@@ -138,13 +150,15 @@ class AdmissionGroomReviewServiceTest {
 
     @Test
     @DisplayName("Groom reject requires feedback")
-    void reviewReject_withoutFeedback_shouldThrowException() {
+    void should_ThrowException_When_RejectWithoutFeedback() {
+        // Arrange
         AdmissionApplication admission = admission(1L, AdmissionStatus.GROOM_REVIEW);
         GroomReviewRequest request = request(ReviewDecision.REJECTED, " ");
 
         when(admissionApplicationRepository.findByIdForUpdate(1L))
                 .thenReturn(Optional.of(admission));
 
+        // Act & Assert
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
                 () -> service.review(1L, 100L, request));
@@ -156,7 +170,8 @@ class AdmissionGroomReviewServiceTest {
 
     @Test
     @DisplayName("Retry allocation from WAITING_FOR_STALL allocates quarantine stall and moves to VET_REVIEW")
-    void allocateWaitingAdmission_whenCapacityReturns_shouldAllocateAndMoveToVetReview() {
+    void should_AllocateAndMoveToVetReview_When_CapacityReturns() {
+        // Arrange
         AdmissionApplication admission = admission(1L, AdmissionStatus.WAITING_FOR_STALL);
         admission.setGroomDecision(ReviewDecision.APPROVED);
         StableStall quarantineStall = stall(12L);
@@ -169,8 +184,10 @@ class AdmissionGroomReviewServiceTest {
         when(admissionApplicationRepository.save(admission))
                 .thenReturn(admission);
 
+        // Act
         AdmissionApplication result = service.allocateWaitingAdmission(1L);
 
+        // Assert
         assertEquals(AdmissionStatus.VET_REVIEW, result.getStatus());
         assertEquals(12L, result.getQuarantineStallId());
         assertEquals(StallStatus.OCCUPIED, quarantineStall.getStatus());
@@ -179,13 +196,15 @@ class AdmissionGroomReviewServiceTest {
 
     @Test
     @DisplayName("Retry allocation from WAITING_FOR_STALL requires a previous Groom approval")
-    void allocateWaitingAdmission_whenAdmissionWasNotApprovedByGroom_shouldThrowException() {
+    void should_ThrowException_When_AdmissionWasNotApprovedByGroom() {
+        // Arrange
         AdmissionApplication admission = admission(1L, AdmissionStatus.WAITING_FOR_STALL);
         admission.setGroomDecision(null);
 
         when(admissionApplicationRepository.findByIdForUpdate(1L))
                 .thenReturn(Optional.of(admission));
 
+        // Act & Assert
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
                 () -> service.allocateWaitingAdmission(1L));
@@ -197,7 +216,8 @@ class AdmissionGroomReviewServiceTest {
 
     @Test
     @DisplayName("Retry allocation keeps WAITING_FOR_STALL and does not save when capacity is still unavailable")
-    void allocateWaitingAdmission_whenCapacityIsStillUnavailable_shouldKeepWaitingWithoutSaving() {
+    void should_KeepWaitingWithoutSaving_When_CapacityIsStillUnavailable() {
+        // Arrange
         AdmissionApplication admission = admission(1L, AdmissionStatus.WAITING_FOR_STALL);
         admission.setGroomDecision(ReviewDecision.APPROVED);
 
@@ -205,8 +225,10 @@ class AdmissionGroomReviewServiceTest {
                 .thenReturn(Optional.of(admission));
         mockCapacity(0, 0, 5);
 
+        // Act
         AdmissionApplication result = service.allocateWaitingAdmission(1L);
 
+        // Assert
         assertEquals(AdmissionStatus.WAITING_FOR_STALL, result.getStatus());
         assertNull(result.getQuarantineStallId());
         verify(stableStallRepository, never()).findFirstAvailableQuarantineStallForUpdate();
@@ -221,11 +243,12 @@ class AdmissionGroomReviewServiceTest {
             "0, 0, 10, WAITING_FOR_STALL"
     })
     @DisplayName("Capacity boundary cases follow the quarantine and downstream regular capacity rule")
-    void reviewApprove_capacityBoundaryCases_shouldFollowBusinessRule(
+    void should_FollowBusinessRule_When_TestingCapacityBoundaryCases(
             long availableQuarantine,
             long occupiedQuarantine,
             long availableRegular,
             AdmissionStatus expectedStatus) {
+        // Arrange
         AdmissionApplication admission = admission(1L, AdmissionStatus.GROOM_REVIEW);
         GroomReviewRequest request = request(ReviewDecision.APPROVED, "Approved");
         StableStall quarantineStall = stall(13L);
@@ -240,20 +263,24 @@ class AdmissionGroomReviewServiceTest {
         when(admissionApplicationRepository.save(admission))
                 .thenReturn(admission);
 
+        // Act
         AdmissionApplication result = service.review(1L, 100L, request);
 
+        // Assert
         assertEquals(expectedStatus, result.getStatus());
     }
 
     @Test
     @DisplayName("Groom review is allowed only when admission is in GROOM_REVIEW")
-    void review_whenAdmissionIsNotInGroomReview_shouldThrowException() {
+    void should_ThrowException_When_AdmissionIsNotInGroomReview() {
+        // Arrange
         AdmissionApplication admission = admission(1L, AdmissionStatus.VET_REVIEW);
         GroomReviewRequest request = request(ReviewDecision.APPROVED, "Approved");
 
         when(admissionApplicationRepository.findByIdForUpdate(1L))
                 .thenReturn(Optional.of(admission));
 
+        // Act & Assert
         IllegalStateException exception = assertThrows(
                 IllegalStateException.class,
                 () -> service.review(1L, 100L, request));

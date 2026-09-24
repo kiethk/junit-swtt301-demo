@@ -54,7 +54,7 @@ class AdmissionManagerReviewServiceTest {
         private AdmissionManagerReviewService service;
 
         @Test
-        void review_whenAdmissionNotFound_shouldThrowException() {
+        void should_ThrowException_When_AdmissionNotFound() {
                 // Arrange
                 when(admissionApplicationRepository.findByIdForUpdate(1L))
                                 .thenReturn(Optional.empty());
@@ -68,7 +68,7 @@ class AdmissionManagerReviewServiceTest {
         }
 
         @Test
-        void review_whenStatusIsNotManagerReview_shouldThrowException() {
+        void should_ThrowException_When_StatusIsNotManagerReview() {
 
                 // Arrange
                 AdmissionApplication admission = new AdmissionApplication();
@@ -77,19 +77,18 @@ class AdmissionManagerReviewServiceTest {
                 when(admissionApplicationRepository.findByIdForUpdate(1L))
                                 .thenReturn(Optional.of(admission));
 
-                // Act
+                // Act & Assert
                 IllegalStateException exception = assertThrows(
                                 IllegalStateException.class,
                                 () -> service.review(1L, 100L, null));
 
-                // Assert
                 assertEquals(
                                 "Admission is not ready for manager review",
                                 exception.getMessage());
         }
 
         @Test
-        void review_whenDecisionIsNull_shouldThrowException() {
+        void should_ThrowException_When_DecisionIsNull() {
 
                 // Arrange
                 AdmissionApplication admission = new AdmissionApplication();
@@ -101,19 +100,18 @@ class AdmissionManagerReviewServiceTest {
                 when(admissionApplicationRepository.findByIdForUpdate(1L))
                                 .thenReturn(Optional.of(admission));
 
-                // Act
+                // Act & Assert
                 IllegalArgumentException exception = assertThrows(
                                 IllegalArgumentException.class,
                                 () -> service.review(1L, 100L, request));
 
-                // Assert
                 assertEquals(
                                 "Decision is required",
                                 exception.getMessage());
         }
 
         @Test
-        void reject_shouldRejectAdmissionAndNotCreateHorse() {
+        void should_RejectAdmissionAndNotCreateHorse_When_ManagerRejects() {
 
                 // Arrange
                 AdmissionApplication admission = new AdmissionApplication();
@@ -151,7 +149,7 @@ class AdmissionManagerReviewServiceTest {
         }
 
         @Test
-        void reject_withoutFeedback_shouldThrowException() {
+        void should_ThrowException_When_RejectWithoutFeedback() {
 
                 // Arrange
                 AdmissionApplication admission = new AdmissionApplication();
@@ -164,12 +162,11 @@ class AdmissionManagerReviewServiceTest {
                 when(admissionApplicationRepository.findByIdForUpdate(1L))
                                 .thenReturn(Optional.of(admission));
 
-                // Act
+                // Act & Assert
                 IllegalArgumentException exception = assertThrows(
                                 IllegalArgumentException.class,
                                 () -> service.review(1L, 100L, request));
 
-                // Assert
                 assertEquals(
                                 "Feedback is required when rejecting an admission",
                                 exception.getMessage());
@@ -182,7 +179,7 @@ class AdmissionManagerReviewServiceTest {
         }
 
         @Test
-        void approve_whenNoRegularStall_shouldThrowException() {
+        void should_ThrowException_When_NoRegularStall() {
 
                 // Arrange
                 AdmissionApplication admission = new AdmissionApplication();
@@ -198,12 +195,11 @@ class AdmissionManagerReviewServiceTest {
                 when(stableStallRepository.findFirstAvailableRegularStallForUpdate())
                                 .thenReturn(Optional.empty());
 
-                // Act
+                // Act & Assert
                 IllegalStateException exception = assertThrows(
                                 IllegalStateException.class,
                                 () -> service.review(1L, 100L, request));
 
-                // Assert
                 assertEquals(
                                 "No available regular stall",
                                 exception.getMessage());
@@ -219,7 +215,7 @@ class AdmissionManagerReviewServiceTest {
         }
 
         @Test
-        void approve_shouldCreateHorseAndCompleteAdmission() {
+        void should_CreateHorseAndCompleteAdmission_When_ManagerApproves() {
 
                 // Arrange
                 AdmissionApplication admission = new AdmissionApplication();
@@ -281,7 +277,7 @@ class AdmissionManagerReviewServiceTest {
         }
 
         @Test
-        void approve_shouldCreateHorseWithCorrectData() {
+        void should_CreateHorseWithCorrectData_When_ManagerApproves() {
 
                 // Arrange
                 AdmissionApplication admission = new AdmissionApplication();
@@ -342,7 +338,7 @@ class AdmissionManagerReviewServiceTest {
         }
 
         @Test
-        void approve_shouldReleaseQuarantineStall() {
+        void should_ReleaseQuarantineStall_When_ManagerApproves() {
 
                 // Arrange
                 AdmissionApplication admission = new AdmissionApplication();

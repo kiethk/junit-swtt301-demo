@@ -36,7 +36,8 @@ class HorseServiceTest {
 
     @Test
     @DisplayName("Gán chuồng thành công: Chuồng mới chuyển sang OCCUPIED, ngựa nhận currentStallId")
-    void testAssignStall_Success() {
+    void should_AssignStallSuccessfully_When_HorseAndStallAvailable() {
+        // Arrange
         Horse horse = new Horse();
         horse.setId(1L);
         horse.setName("Lightning Bolt");
@@ -50,8 +51,10 @@ class HorseServiceTest {
         when(stableStallRepository.findById(6L)).thenReturn(Optional.of(stall));
         when(horseRepository.save(any(Horse.class))).thenAnswer(i -> i.getArgument(0));
 
+        // Act
         Horse updated = horseService.assignStall(1L, 6L);
 
+        // Assert
         assertNotNull(updated);
         assertEquals(6L, updated.getCurrentStallId());
         assertEquals(StallStatus.OCCUPIED, stall.getStatus());
@@ -61,7 +64,8 @@ class HorseServiceTest {
 
     @Test
     @DisplayName("Đổi chuồng: Chuồng cũ về AVAILABLE, chuồng mới thành OCCUPIED")
-    void testAssignStall_ChangeStall() {
+    void should_ReleaseOldStallAndOccupyNewStall_When_ChangingStall() {
+        // Arrange
         Horse horse = new Horse();
         horse.setId(1L);
         horse.setCurrentStallId(5L); // Chuồng cũ
@@ -79,8 +83,10 @@ class HorseServiceTest {
         when(stableStallRepository.findById(5L)).thenReturn(Optional.of(oldStall));
         when(horseRepository.save(any(Horse.class))).thenAnswer(i -> i.getArgument(0));
 
+        // Act
         Horse updated = horseService.assignStall(1L, 6L);
 
+        // Assert
         assertEquals(6L, updated.getCurrentStallId());
         assertEquals(StallStatus.AVAILABLE, oldStall.getStatus());
         assertEquals(StallStatus.OCCUPIED, newStall.getStatus());
@@ -90,13 +96,15 @@ class HorseServiceTest {
 
     @Test
     @DisplayName("Lỗi khi chuồng không tồn tại")
-    void testAssignStall_StallNotFound() {
+    void should_ThrowException_When_StallNotFound() {
+        // Arrange
         Horse horse = new Horse();
         horse.setId(1L);
 
         when(horseRepository.findById(1L)).thenReturn(Optional.of(horse));
         when(stableStallRepository.findById(999L)).thenReturn(Optional.empty());
 
+        // Act & Assert
         assertThrows(RuntimeException.class, () -> horseService.assignStall(1L, 999L));
         verify(horseRepository, never()).save(any());
     }

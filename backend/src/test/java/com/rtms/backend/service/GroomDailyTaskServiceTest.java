@@ -55,7 +55,7 @@ class GroomDailyTaskServiceTest {
 
     @Test
     @DisplayName("1. Sinh việc thành công cho ngựa trong chuồng - Đủ 5 mốc việc chuẩn SOP")
-    void testGenerateDailyRoutineTasks_Success() {
+    void should_GenerateFiveSOPTasks_When_HorsesInStallsWithGroom() {
         // Arrange
         LocalDate targetDate = LocalDate.of(2026, 9, 22);
 
@@ -113,7 +113,7 @@ class GroomDailyTaskServiceTest {
 
     @Test
     @DisplayName("2. Tính Idempotent - Nếu các task đã tồn tại thì không sinh trùng lặp")
-    void testGenerateDailyRoutineTasks_Idempotent() {
+    void should_NotGenerateDuplicateTasks_When_TasksAlreadyExist() {
         // Arrange
         LocalDate targetDate = LocalDate.of(2026, 9, 22);
 
@@ -142,7 +142,7 @@ class GroomDailyTaskServiceTest {
 
     @Test
     @DisplayName("3. Không có ngựa nào trong chuồng - Trả về mảng rỗng")
-    void testGenerateDailyRoutineTasks_NoHorsesInStalls() {
+    void should_ReturnEmptyList_When_NoHorsesInStalls() {
         // Arrange
         when(horseRepository.findByCurrentStallIdIsNotNull()).thenReturn(Collections.emptyList());
 
@@ -157,7 +157,7 @@ class GroomDailyTaskServiceTest {
 
     @Test
     @DisplayName("4. Ngựa có chuồng nhưng chuồng chưa gán Groom - Bỏ qua")
-    void testGenerateDailyRoutineTasks_StallWithoutGroom() {
+    void should_SkipTaskGeneration_When_StallHasNoGroom() {
         // Arrange
         Horse horse = new Horse();
         horse.setId(1L);
