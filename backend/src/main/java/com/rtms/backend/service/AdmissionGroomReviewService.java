@@ -104,7 +104,10 @@ public class AdmissionGroomReviewService {
             admission.setStatus(AdmissionStatus.WAITING_FOR_STALL);
             return;
         }
+//          ===============RIGHT
+//         quarantineStall.setStatus(StallStatus.AVAILABLE);
 
+//          ===============WRONG
         quarantineStall.setStatus(StallStatus.OCCUPIED);
         stableStallRepository.save(quarantineStall);
 
