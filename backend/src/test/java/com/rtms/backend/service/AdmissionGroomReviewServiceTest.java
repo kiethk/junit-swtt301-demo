@@ -158,6 +158,7 @@ class AdmissionGroomReviewServiceTest {
     @DisplayName("Retry allocation from WAITING_FOR_STALL allocates quarantine stall and moves to VET_REVIEW")
     void allocateWaitingAdmission_whenCapacityReturns_shouldAllocateAndMoveToVetReview() {
         AdmissionApplication admission = admission(1L, AdmissionStatus.WAITING_FOR_STALL);
+        admission.setGroomDecision(ReviewDecision.APPROVED);
         StableStall quarantineStall = stall(12L);
 
         when(admissionApplicationRepository.findByIdForUpdate(1L))
@@ -174,6 +175,42 @@ class AdmissionGroomReviewServiceTest {
         assertEquals(12L, result.getQuarantineStallId());
         assertEquals(StallStatus.OCCUPIED, quarantineStall.getStatus());
         verify(stableStallRepository).save(quarantineStall);
+    }
+
+    @Test
+    @DisplayName("Retry allocation from WAITING_FOR_STALL requires a previous Groom approval")
+    void allocateWaitingAdmission_whenAdmissionWasNotApprovedByGroom_shouldThrowException() {
+        AdmissionApplication admission = admission(1L, AdmissionStatus.WAITING_FOR_STALL);
+        admission.setGroomDecision(null);
+
+        when(admissionApplicationRepository.findByIdForUpdate(1L))
+                .thenReturn(Optional.of(admission));
+
+        IllegalStateException exception = assertThrows(
+                IllegalStateException.class,
+                () -> service.allocateWaitingAdmission(1L));
+
+        assertEquals("Admission must be approved by Groom before allocation", exception.getMessage());
+        verify(stableStallRepository, never()).lockAdmissionCapacityStalls();
+        verify(admissionApplicationRepository, never()).save(any(AdmissionApplication.class));
+    }
+
+    @Test
+    @DisplayName("Retry allocation keeps WAITING_FOR_STALL and does not save when capacity is still unavailable")
+    void allocateWaitingAdmission_whenCapacityIsStillUnavailable_shouldKeepWaitingWithoutSaving() {
+        AdmissionApplication admission = admission(1L, AdmissionStatus.WAITING_FOR_STALL);
+        admission.setGroomDecision(ReviewDecision.APPROVED);
+
+        when(admissionApplicationRepository.findByIdForUpdate(1L))
+                .thenReturn(Optional.of(admission));
+        mockCapacity(0, 0, 5);
+
+        AdmissionApplication result = service.allocateWaitingAdmission(1L);
+
+        assertEquals(AdmissionStatus.WAITING_FOR_STALL, result.getStatus());
+        assertNull(result.getQuarantineStallId());
+        verify(stableStallRepository, never()).findFirstAvailableQuarantineStallForUpdate();
+        verify(admissionApplicationRepository, never()).save(any(AdmissionApplication.class));
     }
 
     @ParameterizedTest(name = "availableQ={0}, occupiedQ={1}, availableRegular={2} => {3}")

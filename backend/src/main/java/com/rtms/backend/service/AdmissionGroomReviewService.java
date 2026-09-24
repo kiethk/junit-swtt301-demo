@@ -73,7 +73,15 @@ public class AdmissionGroomReviewService {
             throw new IllegalStateException("Admission is not waiting for stall allocation");
         }
 
-        allocateIfCapacityAllows(admission);
+        if (admission.getGroomDecision() != ReviewDecision.APPROVED) {
+            throw new IllegalStateException("Admission must be approved by Groom before allocation");
+        }
+
+        if (!hasAdmissionCapacity()) {
+            return admission;
+        }
+
+        assignQuarantineStallAndMoveToVetReview(admission);
         return admissionApplicationRepository.save(admission);
     }
 
@@ -83,6 +91,11 @@ public class AdmissionGroomReviewService {
             return;
         }
 
+        assignQuarantineStallAndMoveToVetReview(admission);
+    }
+
+    private void assignQuarantineStallAndMoveToVetReview(
+            AdmissionApplication admission) {
         StableStall quarantineStall = stableStallRepository
                 .findFirstAvailableQuarantineStallForUpdate()
                 .orElse(null);
