@@ -48,4 +48,37 @@ public interface StableStallRepository extends JpaRepository<StableStall, Long> 
             """, nativeQuery = true)
     Optional<StableStall> findAvailableRegularStallByIdForUpdate(
             @Param("stallId") Long stallId);
+
+    @Query(value = """
+            SELECT ss.*
+            FROM stable_stalls ss
+            JOIN areas a ON a.id = ss.area_id
+            WHERE a.type IN ('QUARANTINE', 'REGULAR')
+            ORDER BY a.type ASC, a.code ASC, ss.stall_number ASC
+            FOR UPDATE
+            """, nativeQuery = true)
+    List<StableStall> lockAdmissionCapacityStalls();
+
+    @Query(value = """
+            SELECT COUNT(*)
+            FROM stable_stalls ss
+            JOIN areas a ON a.id = ss.area_id
+            WHERE a.type = :areaType
+              AND ss.status = :status
+            """, nativeQuery = true)
+    long countByAreaTypeAndStatus(
+            @Param("areaType") String areaType,
+            @Param("status") String status);
+
+    @Query(value = """
+            SELECT ss.*
+            FROM stable_stalls ss
+            JOIN areas a ON a.id = ss.area_id
+            WHERE a.type = 'QUARANTINE'
+              AND ss.status = 'AVAILABLE'
+            ORDER BY a.code ASC, ss.stall_number ASC
+            LIMIT 1
+            FOR UPDATE
+            """, nativeQuery = true)
+    Optional<StableStall> findFirstAvailableQuarantineStallForUpdate();
 }
